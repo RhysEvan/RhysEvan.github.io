@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhys G. Evans</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ff6b8a 0%, #e60028 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 1.5rem;
+            gap: 3rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            background: rgba(230, 0, 40, 0.1);
+            color: #e60028;
+        }
+
+        nav a.active {
+            color: #e60028;
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: #e60028;
+            border-radius: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #e60028;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            color: #e60028;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            color: #b30020;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .publication {
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .publication-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .publication-header:hover {
+            background: #e9ecef;
+        }
+
+        .publication-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .publication.expanded .arrow {
+            transform: rotate(180deg);
+        }
+
+        .publication-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .publication-content-inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .publication:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .publication-text h3 {
+            margin-bottom: 1rem;
+            color: #b30020;
+            font-size: 1.3rem;
+        }
+
+        .publication-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .publication-image a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .publication-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .publication-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .poster-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .poster-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .poster-header:hover {
+            background: #e9ecef;
+        }
+
+        .poster-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+            color: #e60028;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .poster-item.expanded .arrow {
+            transform: rotate(180deg);
+        }
+
+        .poster-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .poster-content-inner {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .poster-content img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .reference-section {
+            margin-bottom: 3rem;
+        }
+
+        .reference-section h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e60028;
+        }
+
+        .publication-category {
+            margin-bottom: 3rem;
+        }
+
+        .publication-category h3 {
+            color: #b30020;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #b30020;
+        }
+
+        .reference-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .reference-link {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reference-link:hover {
+            background: #e60028;
+            color: white;
+            transform: translateX(10px);
+        }
+
+        .reference-link::before {
+            content: '→';
+            font-weight: bold;
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 2rem auto;
+            box-shadow: 0 8px 24px rgba(230, 0, 40, 0.3);
+            border: 4px solid white;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #e60028;
+            transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: 12px;
+            min-width: 80px;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            background: rgba(230, 0, 40, 0.1);
+        }
+
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover .social-icon {
+            transform: scale(1.1);
+        }
+
+        .social-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            nav a {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.6rem;
+            }
+
+            .publication {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#home" class="nav-link active" data-page="home">Home</a></li>
+            <li><a href="#publications" class="nav-link" data-page="publications">Publications</a></li>
+            <li><a href="#posters" class="nav-link" data-page="posters">Posters</a></li>
+            <li><a href="#references" class="nav-link" data-page="references">References</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <div class="content-card">
+                <h1>Welcome to My Portfolio</h1>
+                <img src="static/portrait/my_face.png" alt="Portrait" class="profile-image">
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/rhys-evans-579a2a225" class="social-link" target="_blank">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="#0077b5">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        <span class="social-label">LinkedIn</span>
+                    </a>
+
+                    <a href="https://www.uantwerpen.be/en/staff/rhys-evans_25868" class="social-link" target="_blank">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="#003d7a">
+                            <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                        </svg>
+                        <span class="social-label">UAntwerpen</span>
+                    </a>
+
+                    <a href="https://orcid.org/0009-0001-2958-5052" class="social-link" target="_blank">
+                        <img src="static/icons/ORCID_iD.svg" class="social-icon">
+                        <span class="social-label">ORCID</span>
+                    </a>
+
+                    <a href="https://www.researchgate.net/profile/Rhys-Evans-24" class="social-link" target="_blank">
+                        <img src="static/icons/ResearchGate_icon_SVG.svg" class="social-icon">
+                        <span class="social-label">ResearchGate</span>
+                    </a>
+
+                    <a href="https://scholar.google.com/citations?hl=nl&user=LSSvnYYAAAAJ" class="social-link" target="_blank">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="#4285f4">
+                            <path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/>
+                        </svg>
+                        <span class="social-label">Google Scholar</span>
+                    </a>
+
+                    <a href="https://github.com/RhysEvan" class="social-link" target="_blank">
+                        <svg class="social-icon" viewBox="0 0 24 24" fill="#333">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        <span class="social-label">GitHub</span>
+                    </a>
+                </div>
+
+                <h3>About Me</h3>
+                <p>
+                    I am a researcher passionate about cutting-edge imaging technologies and computational photography.
+                    My work focuses on leveraging artificial intelligence to push the boundaries of what's possible
+                    in single-shot imaging and 3D reconstruction using structured light profilometry as the base principle.
+                </p>
+                <h3>Current Work</h3>
+                <p>
+                    Currently, I am working in integrating two well known algorithmic techniques to improve scanning completion
+                    without increasing the necessary captured data. Parallel to that my main focus of work pretains to
+                    researching what is possible in single-shot imaging and 3D reconstruction.
+
+                </p>
+                <h3>Research Interests</h3>
+                <p>
+                    My primary interests include single-shot imaging with AI, neural rendering techniques,
+                    Gaussian splatting for 3D reconstruction, and the intersection of computer vision with
+                    physical imaging systems. I am constantly inspired by the intersection of machine vision with robotics,
+                    and aspire to work in this field.
+                    I'm always open to collaborate on projects that challenge conventional approaches to image
+                    acquisition and processing.
+                </p>
+            </div>
+        </div>
+
+        <!-- PUBLICATIONS PAGE -->
+        <div id="publications" class="page">
+            <div class="content-card">
+                <h2>Publications</h2>
+
+                <div class="publication-category">
+                    <h3>First Author - A1 Journals</h3>
+
+                    <div class="publication">
+                        <div class="publication-header">
+                            <span class="publication-title">
+                                Deep Learning for Single-Shot Structured Light Profilometry:
+                                A Comprehensive Dataset and Performance Analysis
+                            </span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="publication-content">
+                            <div class="publication-content-inner">
+                                <div class="publication-text">
+                                    <p>
+                                        In 3D optical metrology, single-shot deep learning-based structured light profilometry
+                                        (SS-DL-SLP) has gained attention because of its measurement speed, simplicity of optical
+                                        setup, and robustness to noise and motion artefacts. However, gathering a sufficiently
+                                        large training dataset for these techniques remains challenging because of practical
+                                        limitations. This paper presents a comprehensive DL-SLP dataset of over 10,000 physical data
+                                        couples. The dataset was constructed by 3D-printing a calibration target featuring randomly
+                                        varying surface profiles and storing the height profiles and the corresponding deformed
+                                        fringe patterns. Our dataset aims to serve as a benchmark for evaluating and comparing
+                                        different models and network architectures in DL-SLP. We performed an analysis of several
+                                        established neural networks, demonstrating high accuracy in obtaining full-field height
+                                        information from previously unseen fringe patterns. In addition, the network was validated
+                                        on unique objects to test the overall robustness of the trained model. To facilitate further
+                                        research and promote reproducibility, all code and the dataset are made publicly available.
+                                        This dataset will enable researchers to explore, develop, and benchmark novel DL-based
+                                        approaches for SS-DL-SLP.
+                                    </p>
+                                    <p><em>Published in: MDPI Journal of Imaging, 24 July 2024</em></p>
+                                </div>
+                                <div class="publication-image">
+                                    <a href="https://www.mdpi.com/2313-433X/10/8/179" target="_blank">
+                                        <img src="static/publication/Deep_Learning_for_Single_Shot_Structured_Light_Profilometry__A_Comprehensive_Dataset_and_Performance_Analysis.png"
+                                             alt="MDPI Journal of Imaging, Publication">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="publication">
+                        <div class="publication-header">
+                            <span class="publication-title">
+                                Pattern Matters: The Impact of Projection Patterns on Deep Learning 3-D Profilometry
+                            </span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="publication-content">
+                            <div class="publication-content-inner">
+                                <div class="publication-text">
+                                    <p>
+                                        In the 3-D optical metrology, single-shot deep learning-based structured light profilometry
+                                        (SS-DL-SLP) has gained attention because of its measurement speed, simplicity of optical setup,
+                                        and robustness to noise and motion artifacts. The chosen projection pattern is a key feature
+                                        within structured light profilometry (SLP), with or without a neural network.
+                                        Algorithmic processes using multishot or single-shot instance scanning require in-depth
+                                        analyses to determine the optimal pattern for their intended measurement purposes.
+                                        This article determines whether the transition to deep learning still requires such in-depth
+                                        research to find the most optimal projection pattern. Our study highlights the performance of
+                                        networks when unconventional projection patterns are used and analyzes what hyperparameters,
+                                        combined with the pattern analyses, make models perform better. We ensure that these
+                                        performance optimizations are not model dependent by executing the same training task on
+                                        different model structures. All code is publicly available to facilitate further research
+                                        and promote reproducibility: https://github.com/RhysEvan/Pattern-Matters
+                                    </p>
+                                    <p><em>Published in: IEEE Transactions on Instrumentation and Measurement, 10 July 2025
+                                        <a href="https://wos-journal.info/journalid/11586" class="social-link" target="_blank">
+                                            <strong>(top 10 percentile!)</strong>
+                                        </a>
+                                    </em></p>
+                                </div>
+                                <div class="publication-image">
+                                    <a href="https://ieeexplore.ieee.org/document/11075725" target="_blank">
+                                        <img src="static/publication/Pattern_Matters_The_Impact_of_Projection_Patterns_on_Deep_Learning_3-D_Profilometry.png"
+                                             alt="IEEE Transactions on Instrumentation and Measurement, Publication">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECOND AUTHOR A1 (COMMENTED OUT - UNCOMMENT WHEN READY) -->
+                <!--
+                <div class="publication-category">
+                    <h3>Second Author - A1 Journals</h3>
+
+                    <div class="publication">
+                        <div class="publication-header">
+                            <span class="publication-title">Your Publication Title Here</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="publication-content">
+                            <div class="publication-content-inner">
+                                <div class="publication-text">
+                                    <p>
+                                        Abstract text goes here...
+                                    </p>
+                                    <p><em>Published in: Journal Name, Year</em></p>
+                                </div>
+                                <div class="publication-image">
+                                    <a href="https://example.com/paper" target="_blank">
+                                        <img src="https://via.placeholder.com/300x400/667eea/ffffff?text=Paper" alt="Publication">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+
+                <!-- FIRST AUTHOR P1 (COMMENTED OUT - UNCOMMENT WHEN READY) -->
+                <!--
+                <div class="publication-category">
+                    <h3>First Author - P1 Proceedings</h3>
+
+                    <div class="publication">
+                        <div class="publication-header">
+                            <span class="publication-title">Your Publication Title Here</span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="publication-content">
+                            <div class="publication-content-inner">
+                                <div class="publication-text">
+                                    <p>
+                                        Abstract text goes here...
+                                    </p>
+                                    <p><em>Published in: Conference Name, Year</em></p>
+                                </div>
+                                <div class="publication-image">
+                                    <a href="https://example.com/paper" target="_blank">
+                                        <img src="https://via.placeholder.com/300x400/667eea/ffffff?text=Paper" alt="Publication">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                -->
+
+                <!-- SECOND AUTHOR P1 -->
+                <div class="publication-category">
+                    <h3>Second Author - P1 Proceedings</h3>
+                    <div class="publication">
+                        <div class="publication-header">
+                            <span class="publication-title">
+                                Graph-based Point Cloud Surface Reconstruction using B-Splines
+                            </span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="publication-content">
+                            <div class="publication-content-inner">
+                                <div class="publication-text">
+                                    <p>
+                                        Generating continuous surfaces from discrete point cloud data is a fundamental
+                                        task in several 3D vision applications. Real-world point clouds are inherently
+                                        noisy due to various technical and environ-mental factors. Existing data-driven
+                                        surface reconstruction algorithms rely heavily on ground truth normals or
+                                        compute approximate normals as an intermediate step. This dependency makes them
+                                        extremely unreliable for noisy point cloud datasets, even if the availability of
+                                        ground truth training data is ensured, which is not always the case. B-spline
+                                        re-construction techniques provide compact surface representations of point
+                                        clouds and are especially known for their smoothening properties. However, the
+                                        complexity of the surfaces approximated using B-splines is directly influenced
+                                        by the number and location of the spline control points.Existing spline-based
+                                        modeling methods predict the locations of a fixed number of control points for a
+                                        given point cloud, which makes it very difficult to match the complexity of its
+                                        underlying surface. In this work, we develop a Dictionary-Guided Graph
+                                        Convolutional Network-based sur-face reconstruction strategy where we
+                                        simultaneously predict both the location and the number of control points for
+                                        noisy point cloud data to generate smooth surfaces without the use of any point
+                                        normals. We com-pare our reconstruction method with several well-known as well
+                                        as recent baselines by employing widely-used evaluation metrics, and
+                                        demonstrate that our method outperforms all of them both qualitatively
+                                        and quantitatively
+                                    </p>
+                                    <p><em>Published in: ArXiv, 19 September 2025</em></p>
+                                </div>
+                                <div class="publication-image">
+                                    <a href="https://arxiv.org/abs/2509.16050" target="_blank">
+                                        <img src="static/publication/Graph-based_Point_Cloud_Surface_Reconstruction_using_B-Splines.png"
+                                             alt="ArXiv, Publication">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- POSTERS PAGE -->
+        <div id="posters" class="page">
+            <div class="content-card">
+                <h2>Conference Posters</h2>
+
+                <div class="poster-item">
+                    <div class="poster-header">
+                        <span class="poster-title">Flanders Artificial Intelligence Research Day (FAIR 2025)</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="poster-content">
+                        <div class="poster-content-inner">
+                            <img src="static/poster/DOES_3D_SCANNING_WITH_MACHINE_LEARNING_WORK.png" alt="FAIR day 2025">
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="poster-item">
+                    <div class="poster-header">
+                        <span class="poster-title">Real-Time 3D Scene Reconstruction - SIGGRAPH 2024</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="poster-content">
+                        <div class="poster-content-inner">
+                            <img src="https://via.placeholder.com/1000x700/764ba2/ffffff?text=Poster+2" alt="Poster 2">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="poster-item">
+                    <div class="poster-header">
+                        <span class="poster-title">AI-Driven Computational Photography - ICCP 2023</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="poster-content">
+                        <div class="poster-content-inner">
+                            <img src="https://via.placeholder.com/1000x700/667eea/ffffff?text=Poster+3" alt="Poster 3">
+                        </div>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <!-- REFERENCES PAGE -->
+        <div id="references" class="page">
+            <div class="content-card">
+                <h2>Research References</h2>
+
+                <div class="reference-section">
+                    <h3>Single Shot Imaging with AI</h3>
+                    <div class="reference-links">
+                        <a href="https://depth-anything-v2.github.io" class="reference-link" target="_blank">
+                            Depth Anything V2 (20 Oct 2024)
+                        </a>
+                        <a href="https://www.sciencedirect.com/science/article/pii/S0143816616000166" class="reference-link" target="_blank">
+                            Real-time structured light profilometry: a review (December 2016)
+                        </a>
+                        <a href="https://www.mdpi.com/2673-8244/5/3/47" class="reference-link" target="_blank">
+                            Optical Fringe Projection: A Straightforward Approach to 3D Metrology (3 August 2025)
+                        </a>
+                        <a href="https://www.nature.com/articles/s41377-022-00714-x" class="reference-link" target="_blank">
+                            Deep learning in optical metrology: a review (23 February 2022)
+                        </a>
+                        <a href="https://opg.optica.org/oe/fulltext.cfm?uri=oe-33-17-35881" class="reference-link" target="_blank">
+                            Depth extraction for shiny objects from a single-frame fringe image (25 Aug 2025)
+                        </a>
+                        <a href="https://www.sciencedirect.com/science/article/abs/pii/S0263224124008376" class="reference-link" target="_blank">
+                            Global phase accuracy enhancement of structured light system calibration and 3D
+                            reconstruction by overcoming inevitable unsatisfactory intensity modulation (15 August 2024)
+                        </a>
+                        <a href="https://escholarship.org/uc/item/95d1x5rb" class="reference-link" target="_blank">
+                            Metric Monocular Depth Estimation: Integrating Generative Priors with Depth from Defocus
+                            (15 August 2025)
+                        </a>
+                        <a href="https://www.sciencedirect.com/science/article/abs/pii/S0262885624003093" class="reference-link" target="_blank">
+                            Novel approach for fast structured light framework using deep learning (October 2024)
+                        </a>
+                        <a href="https://www.oejournal.org/oea/article/doi/10.29026/oea.2024.230034" class="reference-link" target="_blank">
+                            Physics-informed deep learning for fringe pattern analysis (31 August 2023)
+                        </a>
+                        <a href="https://www.sciencedirect.com/science/article/abs/pii/S014381662300413X" class="reference-link" target="_blank">
+                            Single-shot absolute 3D measurement based on speckle-embedded fringe projection
+                            (January 2024)
+                        </a>
+                        <a href="https://www.nature.com/articles/s41377-024-01721-w" class="reference-link" target="_blank">
+                            Single-shot super-resolved fringe projection profilometry (SSSR-FPP): 100,000
+                            frames-per-second 3D imaging with deep learning (7 February 2025)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="reference-section">
+                    <h3>NeRF</h3>
+                    <div class="reference-links">
+                        <a href="https://www.matthewtancik.com/nerf" class="reference-link" target="_blank">
+                            NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis (3 August 2020)
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=CRlN-cYFxTk" class="reference-link" target="_blank">
+                            NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis
+                            (ML Research Paper Explained) (19 April 2021)
+                        </a>
+                        <a href="https://jonbarron.info/mipnerf360" class="reference-link" target="_blank">
+                            Mip-NeRF 360: Unbounded Anti-Aliased Neural Radiance Fields (25 March 2022)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="reference-section">
+                    <h3>Gaussian Splatting</h3>
+                    <div class="reference-links">
+                        <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting" class="reference-link" target="_blank">
+                            3D Gaussian Splatting for Real-Time Radiance Field Rendering (8 August 2023)
+                        </a>
+                        <a href="https://arxiv.org/abs/2401.03890" class="reference-link" target="_blank">
+                            A Survey on 3D Gaussian Splatting (6 October 2025)
+                        </a>
+                        <a href="https://openaccess.thecvf.com/content/ACCV2024/papers/Choi_MeshGS_Adaptive_Mesh-Aligned_Gaussian_Splatting_for_High-Quality_Rendering_ACCV_2024_paper.pdf" class="reference-link" target="_blank">
+                            MeshGS: Adaptive Mesh-Aligned Gaussian Splatting for High-Quality Rendering (11 October 2024)
+                        </a>
+                        <a href="https://gaoxiangjun.github.io/mani_gs" class="reference-link" target="_blank">
+                            Mani-GS: Gaussian Splatting Manipulation with Triangular Mesh (24 March 2025)
+                        </a>
+                        <a href="https://www.nature.com/articles/s41598-025-03200-7" class="reference-link" target="_blank">
+                            Single view generalizable 3D reconstruction based on 3D Gaussian splatting (27 May 2025 )
+                        </a>
+                        <a href="https://trianglesplatting.github.io" class="reference-link" target="_blank">
+                            Triangle Splatting for Real-Time Radiance Field Rendering (25 May 2025)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="reference-section">
+                    <h3>Simultaneous Localization And Mapping</h3>
+                    <div class="reference-links">
+                        <a href="https://arxiv.org/abs/2207.00254" class="reference-link" target="_blank">
+                            A Survey on Active Simultaneous Localization and Mapping: State of the Art and New
+                            Frontiers (13 Feb 2023)
+                        </a>
+                        <a href="https://proroklab.github.io/DVM-SLAM" class="reference-link" target="_blank">
+                            DVM-SLAM: Decentralized Viusal Monocular Simultaneous Localization and Mapping for
+                            Multi-Agent Systems (26 August 2025)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="reference-section">
+                    <h3>Point Cloud Quality Metrics</h3>
+                    <div class="reference-links">
+                        <a href="https://ieeexplore.ieee.org/document/9733538" class="reference-link" target="_blank">
+                            Benchmarking of objective quality metrics for point cloud compression (16 March 2022)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.getAttribute('data-page');
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === targetPage) {
+                        page.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        const posterItems = document.querySelectorAll('.poster-item');
+        posterItems.forEach(item => {
+            const header = item.querySelector('.poster-header');
+            const content = item.querySelector('.poster-content');
+
+            header.addEventListener('click', () => {
+                const isExpanded = item.classList.contains('expanded');
+
+                if (isExpanded) {
+                    content.style.maxHeight = '0';
+                    item.classList.remove('expanded');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    item.classList.add('expanded');
+                }
+            });
+        });
+
+        const publicationItems = document.querySelectorAll('.publication');
+        publicationItems.forEach(item => {
+            const header = item.querySelector('.publication-header');
+            const content = item.querySelector('.publication-content');
+
+            header.addEventListener('click', () => {
+                const isExpanded = item.classList.contains('expanded');
+
+                if (isExpanded) {
+                    content.style.maxHeight = '0';
+                    item.classList.remove('expanded');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    item.classList.add('expanded');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
